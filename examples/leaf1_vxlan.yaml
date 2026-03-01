@@ -1,0 +1,45 @@
+# Network Intent DSL - Leaf Node Configuration
+metadata:
+  version: "1.0"
+  target_platform: "vyos" # or "cisco_nxos", matches your trained model
+  created_by: "admin"
+
+topology:
+  hostname: "LEAF-01"
+  role: "leaf"
+  device_id: 1 # Used for IP calculation algorithms
+
+interfaces:
+  uplinks:
+    - name: "eth1"
+      neighbor: "SPINE-01"
+      address: "10.0.1.1/30"
+    - name: "eth2"
+      neighbor: "SPINE-02"
+      address: "10.0.1.5/30"
+  
+  loopback:
+    address: "10.1.1.1/32"
+    anycast_ip: "10.1.100.1/32"
+
+overlay:
+  protocol: "evpn-vxlan"
+  as_number: 65001
+  source_interface: "loopback0"
+  
+  # EVPN/VXLAN Tenants and VNIs
+  tenants:
+    - name: "WEB-TIER"
+      vlan_id: 10
+      vni: 10010
+      subnet: "10.10.10.1/24"
+    
+    - name: "APP-TIER"
+      vlan_id: 20
+      vni: 10020
+      subnet: "10.10.20.1/24"
+
+    - name: "DB-TIER"
+      vlan_id: 30
+      vni: 10030
+      subnet: "10.10.30.1/24"
